@@ -1,0 +1,41 @@
+// ==UserScript==
+// @name         Earth-Analogue Pathfinder Dates
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Append real-life analogue dates to the Pathfinder wiki (ex: '4721 AR' becomes '4721 AR (2021)')
+// @author       TraceAmountsOfOlive
+// @match        https://pathfinderwiki.com/wiki/*
+// @icon         https://www.google.com/s2/favicons?domain=pathfinderwiki.com
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+    var article = document.getElementById("mw-content-text").innerHTML; //Get the actual body of the article
+    var index = 0, newDate, dateSize;									//Set up some variables
+    while(true){													//Main Loop
+        index = regexIndexOf(article, /\d{1,4} AR/, index);				//Find the next date
+        if (index == -1) { break; }										//Finish the loop if we've run out of dates
+        index += 9; 													//Skip 9 characters past the link opening
+        newDate = /\d{1,4}/.exec(article.slice(index));					//Calculate the date to add to the page
+        dateSize = Math.floor(Math.log10(newDate[0]));					//Find the length of the date found
+        if( newDate != null) {											//And make sure it wasn't null
+            article = article.slice(0, index + 4 + dateSize)			//Find the point in the article directly after the date
+        			+ " (" + ( newDate[0] - 2700) + ")"					//Add the calculated dates
+            		+ article.slice(index + 4 + dateSize);				//And add the rest of that article back on
+        }
+        index += 15;													//Move index past the current date to look for the next one
+    }																//End Main Loop
+    document.getElementById("mw-content-text").innerHTML = article;		//Update the article after the loop completes
+})();
+
+//Find the first instance of a regex test in a string found after the first i characters
+//text - string to search
+//re   - regex test
+//i    - index to start searching from
+function regexIndexOf(text, re, i) {
+    var indexInSuffix = text.slice(i).search(re);						//Slice text at i and regex search
+    return indexInSuffix < 0 ? indexInSuffix : indexInSuffix + i;		//If something was found, return the result + i, else return -1
+}
+
+//<a href=\"/wiki/4305_AR\" title=\"4305 AR\">
