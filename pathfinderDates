@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Earth-Analogue Pathfinder Dates
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.11
 // @description  Append real-life analogue dates to the Pathfinder wiki (ex: '4721 AR' becomes '4721 AR (2021)')
 // @author       TraceAmountsOfOlive
 // @match        https://pathfinderwiki.com/wiki/*
@@ -22,7 +22,7 @@
         if( newDate != null) {											    //And make sure it wasn't null
             article = addToString(article, " (" + newDate + ")", index + dateSize + 4);
         }
-        console.log(article.slice(index - 20, index), article.slice(index, index + 20));
+        //console.log(article.slice(index - 20, index), article.slice(index, index + 20));
         index += 15;													    //Move index past the current date to look for the next one
     }																    //End Main Loop
     document.getElementById("mw-content-text").innerHTML = article;		    //Update the article after the loop completes
