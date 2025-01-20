@@ -11,21 +11,21 @@
 
 (function() {
     'use strict';
-    var article = document.getElementById("mw-content-text").innerHTML;     //Get the actual body of the article
-    var index = 0, newDate, dateSize;									    //Set up some variables
-    while(true){												    	//Main Loop
-        index = regexIndexOf(article, />-?\d{1,4} AR</, index);			    //Find the next date
-        if (index == -1) { break; }										    //Finish the loop if we've run out of dates
-        newDate = /\d{1,4}/.exec(article.slice(index))[0] - 2700;		    //Calculate the date to add to the page
-        dateSize = Math.floor(Math.log10(Math.abs(newDate + 2700))) + 1;    //Find the length of the date found
-        //console.log("newDate: " + newDate + "  dateSize: " + dateSize);									//Debug
-        if( newDate != null) {											    //And make sure it wasn't null
+    var article = document.getElementById("mw-content-text").innerHTML;							//Get the actual body of the article
+    var index = 0, oldDate, newDate, dateSize;													//Set up some variables
+    while(true){																				//Main Loop
+        index = regexIndexOf(article, />-?\d{1,4} AR</, index);									//Find the next date
+        if (index == -1) { break; }																//Finish the loop if we've run out of dates
+        oldDate = /-?\d{1,4}/.exec(article.slice(index))[0];
+        newDate = oldDate - 2700;																//Calculate the date to add to the page
+        dateSize = Math.floor(Math.log10(Math.abs(newDate + 2700))) + (oldDate < 0 ? 2 : 1);	//Find the length of the date found
+        //console.log("oldDate: " + oldDate + " newDate: " + newDate + "  dateSize: " + dateSize);		//Debug
+        if( newDate != null) {																	//And make sure it wasn't null
             article = addToString(article, " (" + newDate + ")", index + dateSize + 4);
         }
-        //console.log(article.slice(index - 20, index), article.slice(index, index + 20));
-        index += 15;													    //Move index past the current date to look for the next one
-    }																    //End Main Loop
-    document.getElementById("mw-content-text").innerHTML = article;		    //Update the article after the loop completes
+        index += 15;																			 //Move index past the current date to look for the next one
+    }																							 //End Main Loop
+    document.getElementById("mw-content-text").innerHTML = article;								 //Update the article after the loop completes
 })();
 
 //Find the first instance of a regex test in a string found after the first i characters
@@ -33,8 +33,8 @@
 //re   - regex test
 //i    - index to start searching from
 function regexIndexOf(text, re, i) {
-    var indexInSuffix = text.slice(i).search(re);					    	//Slice text at i and regex search
-    return indexInSuffix < 0 ? indexInSuffix : indexInSuffix + i;		    //If something was found, return the result + i, else return -1
+    var indexInSuffix = text.slice(i).search(re);							//Slice text at i and regex search
+    return indexInSuffix < 0 ? indexInSuffix : indexInSuffix + i;			//If something was found, return the result + i, else return -1
 }
 
 //Insert content into a string
@@ -42,9 +42,9 @@ function regexIndexOf(text, re, i) {
 //add  - string to insert
 //i    - index to add string at
 function addToString(text, add, i) {
-    text = text.slice(0, i)											    	//The string before the index
-		  + add														    	//The string to add
-    	  + text.slice(i);											    	//The string after the index
+    text = text.slice(0, i)													//The string before the index
+		  + add																//The string to add
+    	  + text.slice(i);													//The string after the index
     return text;
 }
 
